@@ -1,7 +1,37 @@
 import React from 'react'
+import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom'
+import { firebase, googleAuthProvider } from '../firebase/firebase.config'
 
-export const Login = () => {
+export const Login = ({ history }) => {
+
+    const { register, formState: { errors }, handleSubmit } = useForm();
+
+    const onSubmit = async (data, e) => {
+
+        const { email, password } = data;
+
+        firebase.auth().signInWithEmailAndPassword(email, password)
+            .then(async ({ user }) => {
+                console.log(user)
+                history.replace("/")
+            })
+            .catch(e => {
+                //Swal.fire('Error', e.message, 'error')
+            })
+        e.target.reset();
+
+    }
+
+    const handleGoogleLogin = () => {
+        console.log(firebase.auth())
+        firebase.auth().signInWithPopup(googleAuthProvider)
+            .then(({ user }) => {
+                console.log(user)
+                history.replace("/")
+            });
+    }
+
     return (
         <div className="container w-75 mt-5 rounded shadow">
 
@@ -22,7 +52,7 @@ export const Login = () => {
                     <h2 className="fw-bold text-center py5">Bienvenidos</h2>
 
                     <div className="text-center">
-                        <form autoComplete="off">
+                        <form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
 
                             <div className="mb-4">
                                 <input
@@ -30,8 +60,21 @@ export const Login = () => {
                                     className="form-control"
                                     placeholder="Ingresa tu email"
                                     name="email"
-
+                                    {...register("email", {
+                                        required: {
+                                            value: true,
+                                            message: 'Email es requerido'
+                                        },
+                                        pattern: {
+                                            value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                                            message:
+                                                "El formato de e-mail es invalido."
+                                        }
+                                    })}
                                 />
+                                <span className="text-danger text-small d-block mb-2">
+                                    {errors.email && errors.email.message}
+                                </span>
                             </div>
 
                             <div className="mb-4">
@@ -40,12 +83,24 @@ export const Login = () => {
                                     className="form-control"
                                     placeholder="Contraseña"
                                     name="password"
-
+                                    name="password"
+                                    {...register("password", {
+                                        required: {
+                                            value: true,
+                                            message: 'Contraseña es requerido'
+                                        },
+                                        minLength: {
+                                            value: 6,
+                                            message: "Debe tener como minimo 6 caracteres"
+                                        }
+                                    })}
                                 />
-
+                                <span className="text-danger text-small d-block mb-2">
+                                    {errors.password && errors.password.message}
+                                </span>
                             </div>
                             <div className="d-grid">
-                                <Link to="/" className="btn btn-primary"> Login </Link>
+                                <button type="submit" className="btn btn-primary"> Login </button>
                             </div>
 
                             <div className="my-3">
@@ -59,10 +114,10 @@ export const Login = () => {
                                 <div className="col-12">Iniciar Sesión</div>
                             </div>
 
-                            <button className="btn btn-outline-danger w-100 my-1" >
+                            <button className="btn btn-outline-danger w-100 my-1" onClick={handleGoogleLogin} >
                                 <div className="row align-items-center">
                                     <div className="col-2 d-none d-md-block">
-                                        <i className="bi bi-google" width="40"/>
+                                        <i className="bi bi-google" width="40" />
                                     </div>
                                     <div className="col-12 col-md-10 text-center">
                                         Google

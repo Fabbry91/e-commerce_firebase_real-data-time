@@ -12,8 +12,9 @@ export const CheckOut = (props) => {
 
     useEffect(() => {
         const getOneArticulo = async (prodId) => {
-            const { data } = await axios.get(prodId);
-            setProduct(data)
+            const { data } = await axios.get();
+            const obj = data.find(art => art.id == prodId);
+            setProduct(obj)
         }
         getOneArticulo(prodId)
     }, [prodId])
