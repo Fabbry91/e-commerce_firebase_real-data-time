@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom'
+import { AuthContext } from '../Context/AuthContext';
+import { type } from '../Context/types';
 import { firebase, googleAuthProvider } from '../firebase/firebase.config'
 
 export const Login = ({ history }) => {
 
     const { register, formState: { errors }, handleSubmit } = useForm();
+    const { dispatch } = useContext(AuthContext)
 
     const onSubmit = async (data, e) => {
 
@@ -13,7 +16,14 @@ export const Login = ({ history }) => {
 
         firebase.auth().signInWithEmailAndPassword(email, password)
             .then(async ({ user }) => {
-                console.log(user)
+                dispatch({
+                    type: type.login,
+                    payload: {
+                        name: user.displayName,
+                        email: user.email,
+                        token: user.accessToken,
+                    }
+                })
                 history.replace("/")
             })
             .catch(e => {
@@ -27,7 +37,14 @@ export const Login = ({ history }) => {
         console.log(firebase.auth())
         firebase.auth().signInWithPopup(googleAuthProvider)
             .then(({ user }) => {
-                console.log(user)
+                dispatch({
+                    type: type.login,
+                    payload: {
+                        name: user.displayName,
+                        email: user.email,
+                        token: user.accessToken,
+                    }
+                })
                 history.replace("/")
             });
     }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {
     BrowserRouter as Router,
     Switch,
@@ -6,9 +6,14 @@ import {
 } from 'react-router-dom';
 import { Login } from '../auth/Login';
 import { Register } from '../auth/Register';
+import { AuthContext } from '../Context/AuthContext';
 import { DashboardRoutes } from './DashboardRoutes';
+import { RutasPrivadas } from './RutasPrivadas';
 
 export const RouterApp = () => {
+
+    const { user } = useContext(AuthContext);
+
     return (
         <Router>
             <div>
@@ -16,7 +21,12 @@ export const RouterApp = () => {
                     <Route exact path="/login" component={Login} />
                     <Route exact path="/register" component={Register} />
 
-                    <Route path="/" component={DashboardRoutes} />
+                    <RutasPrivadas
+                        path="/"
+                        component={DashboardRoutes}
+                        isAuthenticated={user.logged}
+                    />
+                    
                 </Switch>
             </div>
         </Router>
