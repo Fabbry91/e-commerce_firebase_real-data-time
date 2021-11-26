@@ -1,6 +1,5 @@
 import axios from '../services/Axios';
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 export const CheckOut = (props) => {

@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 export const ProductCard = (prop) => {
 
     const { product } = prop
-    console.log(product)
 
     return (
 
